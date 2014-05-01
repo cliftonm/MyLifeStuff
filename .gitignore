@@ -22,3 +22,7 @@ config/secrets.yml
 
 # unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
 .rvmrc
+.idea
+config/local_env.yml
+config/database.yml
+config/initializers/recaptcha.rb
