@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 6) do
+ActiveRecord::Schema.define(:version => 7) do
 
   create_table "users", :force => true do |t|
     t.string   "username"
@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(:version => 6) do
     t.string   "authentication_token"
     t.datetime "last_signed_in_on"
     t.datetime "signed_up_on"
+    t.boolean  "is_admin"
   end
 
 end

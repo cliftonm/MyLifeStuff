@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  attr_accessible :email, :username, :password, :password_confirmation, :new_password, :new_password_confirmation, :remember_me
+  attr_accessible :email, :username, :password, :password_confirmation, :new_password, :new_password_confirmation, :remember_me, :is_admin
   attr_accessor :password, :new_password, :previous_email, :previous_username, :remember_me
   before_save :encrypt_password
 
@@ -24,9 +24,14 @@ class User < ActiveRecord::Base
 
   def initialize(attributes = {})
     super     # must allow the active record to initialize!
+    @is_admin = false
     attributes.each do |name, value|
       send("#{name}=", value)
     end
+  end
+
+  def is_admin?
+    is_admin
   end
 
   def update(attributes = {})
