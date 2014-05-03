@@ -25,4 +25,7 @@ MyLifeStuff::Application.routes.draw do
 
   get "categories" => "category#show"
   post "category" => "category#post"
+
+  get "accounts" => "account#show"
+  post "account" => "account#post"
 end

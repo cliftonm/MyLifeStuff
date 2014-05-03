@@ -7,6 +7,7 @@ gem 'rails', '3.2.17'
 
 gem 'clifton_lib', '0.0.7'
 gem 'linguistics'     # Rails independent gem
+gem 'encryptor'
 
 gem 'pg'
 gem 'bcrypt-ruby', :require=>'bcrypt'
