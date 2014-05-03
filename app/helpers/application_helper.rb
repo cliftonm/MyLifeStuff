@@ -14,12 +14,17 @@ module ApplicationHelper
   end
 
   # Return HTML to represent the following record collection as a table.
-  def create_table_view(table, columns, options = {})
+  def create_table_view(table, columns, options = {}, &block)
     xdoc = XmlDocument.new()
     table_node = xdoc.create_element('table')
     xdoc.append_child(table_node)
-    create_table_header(xdoc, table_node, columns, options)
-    create_table_content(xdoc, table_node, table, columns, options)
+
+    # We may not want to display the header, for example, nested tables in a "tree view" kind of display.
+    unless options[:no_header]
+      create_table_header(xdoc, table_node, columns, options)
+    end
+
+    create_table_content(xdoc, table_node, table, columns, options, &block)
 
     get_html(xdoc).html_safe
   end
@@ -41,7 +46,7 @@ module ApplicationHelper
   end
 
   # Create the table body content.  No attention is paid to paging, etc.
-  def create_table_content(xdoc, table_node, table, columns, options = {})
+  def create_table_content(xdoc, table_node, table, columns, options)
     table_body_node = xdoc.create_element("tbody")
     table_node.append_child(table_body_node)
 
@@ -63,6 +68,9 @@ module ApplicationHelper
         end
 
         table_row_node.append_child(table_data_node)
+
+        # Allow caller to specify additional HTML in the <td>, for example to allow nesting of tables.
+        yield(row, table_data_node)
       end
     end
 

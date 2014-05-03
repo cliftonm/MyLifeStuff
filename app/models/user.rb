@@ -22,6 +22,8 @@ class User < ActiveRecord::Base
   validates_uniqueness_of :username, :if => Proc.new {|user|
     user.previous_username.nil? || user.username != user.previous_username}
 
+  has_many :categories, dependent: :destroy       # category.user_id is FK to user.id
+
   def initialize(attributes = {})
     super     # must allow the active record to initialize!
     @is_admin = false

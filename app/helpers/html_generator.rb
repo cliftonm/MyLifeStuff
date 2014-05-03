@@ -8,10 +8,12 @@ module Airity
     attr_accessor :str
     attr_reader :xdoc
 
-    def initialize()
+    def initialize(&block)
       @xdoc = XmlDocument.new()
       @current_node = @xdoc
       Linguistics.use :en
+
+      instance_eval(&block) unless block.nil?
     end
 
     def leading_underscore(str)
