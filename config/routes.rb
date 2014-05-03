@@ -20,4 +20,9 @@ MyLifeStuff::Application.routes.draw do
 
   get "admin_users" => "admin#users"
   delete "user/:id" => "admin#delete_user", :as => "user"
+
+  # ===========================
+
+  get "categories" => "category#show"
+  post "category" => "category#post"
 end

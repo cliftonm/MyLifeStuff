@@ -11,7 +11,13 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 7) do
+ActiveRecord::Schema.define(:version => 8) do
+
+  create_table "categories", :force => true do |t|
+    t.integer "user_id"
+    t.integer "category_id"
+    t.string  "name"
+  end
 
   create_table "users", :force => true do |t|
     t.string   "username"

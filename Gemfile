@@ -5,6 +5,9 @@ gem 'rails', '3.2.17'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
+gem 'clifton_lib', '0.0.7'
+gem 'linguistics'     # Rails independent gem
+
 gem 'pg'
 gem 'bcrypt-ruby', :require=>'bcrypt'
 gem 'recaptcha', :require => "recaptcha/rails"

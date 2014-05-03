@@ -16,6 +16,7 @@
       <% if current_user.is_admin %>
         <%= link_to "Admin", admin_users_path %>
       <% end %>
+      <%= link_to "Categories", categories_path %>
   <% else %>
       <%= link_to "Sign up", new_user_path %> or
       <%= link_to "Sign In", sign_in_path %>
