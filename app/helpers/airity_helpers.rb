@@ -88,6 +88,12 @@ module Airity
     model
   end
 
+  def get_auto_complete(options)
+    auto_complete = options[:autocomplete]
+
+    auto_complete
+  end
+
   def get_value(options)
     value = options[:value]
 

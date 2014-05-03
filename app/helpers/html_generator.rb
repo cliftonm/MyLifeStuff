@@ -201,7 +201,7 @@ module Airity
       nil
     end
 
-    def text_field(model_name, field_name = nil, id = nil, klass = nil, data = nil, value = nil)
+    def text_field(model_name, field_name = nil, id = nil, klass = nil, data = nil, value = nil, auto_complete = true)
       element = @xdoc.create_element('input')
       element.html_closing_tag = false
       @current_node.append_child(element)
@@ -217,6 +217,10 @@ module Airity
 
       element.append_attribute(@xdoc.create_attribute('value', value)) if value
 
+      unless auto_complete       # if not wanting autocomplete
+        element.append_attribute(@xdoc.create_attribute('autocomplete', 'off'))
+      end
+
       # TODO: Duplicate code
       if data
         data.each {|item|
@@ -229,7 +233,7 @@ module Airity
     end
 
     # TODO: All but the last line is code duplication of text_field
-    def password_field(model_name, field_name = nil, id = nil, klass = nil)
+    def password_field(model_name, field_name = nil, id = nil, klass = nil, auto_complete = true)
       element = @xdoc.create_element('input')
       element.html_closing_tag = false
       @current_node.append_child(element)
@@ -242,6 +246,10 @@ module Airity
 
       element.append_attribute(@xdoc.create_attribute('class', klass)) if klass
       element.append_attribute(@xdoc.create_attribute('type', 'password'))
+
+      unless auto_complete       # if not wanting autocomplete
+        element.append_attribute(@xdoc.create_attribute('autocomplete', 'off'))
+      end
 
       nil
     end
@@ -279,7 +287,7 @@ module Airity
       nil
     end
 
-    def checkbox(model_name, field_name, text = nil, id = nil, klass = nil)
+    def checkbox(model_name, field_name, text = nil, id = nil, klass = nil, value = nil)
       element = @xdoc.create_element('input')
       element.html_closing_tag = false
       @current_node.append_child(element)
@@ -288,6 +296,7 @@ module Airity
       element.append_attribute(@xdoc.create_attribute('class', klass)) if klass
       element.append_attribute(@xdoc.create_attribute('type', 'checkbox'))
       element.append_attribute(@xdoc.create_attribute('name', "#{model_name}[#{field_name}]"))
+      element.append_attribute(@xdoc.create_attribute('checked', nil)) if value
       element.inner_text = text if text
 
       nil

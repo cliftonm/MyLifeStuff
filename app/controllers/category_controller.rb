@@ -7,6 +7,8 @@ include Airity
 class CategoryController < ApplicationController
   before_filter :authenticate_user
 
+  # TODO: Use a session variable, say ":checked_categories", to preserve selection.
+  # TODO: Add the ability to add extra information to the table rendering, for example "checked" for checkboxes added to rows or columns.
   def show
     categories = Category.where("user_id = #{session[:user_id]} and category_id is null").order('name ASC')
     html_dsl = HtmlDsl.new()

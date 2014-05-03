@@ -37,6 +37,7 @@ module Airity
       nil
     end
 
+    # TODO: Support turning off auto-complete for all form fields.  See http://stackoverflow.com/questions/744490/turning-off-auto-complete-for-text-fields-in-firefox
     def form(model_name, options = {})
       @current_model_name = model_name
       action = get_action(options)
@@ -137,9 +138,10 @@ module Airity
       field_name = get_field_name(options)
       data = get_data(options)
       model = get_model(options)
+      auto_complete = get_auto_complete(options)
       model ||= @current_model_name
       value = get_value(options)
-      @html_gen.text_field(model, field_name, id, class_names, data, value)
+      @html_gen.text_field(model, field_name, id, class_names, data, value, auto_complete)
 
       nil
     end
@@ -148,7 +150,8 @@ module Airity
       class_names = get_class_names(options)
       id = get_id(options)
       field_name = get_field_name(options)
-      @html_gen.password_field(@current_model_name, field_name, id, class_names)
+      auto_complete = get_auto_complete(options)
+      @html_gen.password_field(@current_model_name, field_name, id, class_names, auto_complete)
 
       nil
     end
@@ -164,7 +167,8 @@ module Airity
     def checkbox(field_name, text = nil, options = {})
       class_names = get_class_names(options)
       id = get_id(options)
-      @html_gen.checkbox(@current_model_name, field_name, text, id, class_names)
+      value = get_value(options)
+      @html_gen.checkbox(@current_model_name, field_name, text, id, class_names, value)
 
       nil
     end

@@ -15,15 +15,25 @@ class AccountController < ApplicationController
     accounts = Account.where("user_id=#{session[:user_id]}").order('name ASC')
     html_dsl = HtmlDsl.new()
     html_dsl.form("account", {id: 'account_form', action: 'account', authenticity_token: form_authenticity_token}) do
+
+      # Display options
+      html_dsl.div() do
+        html_dsl.checkbox('display_all', 'Display all fields (Passwords will appear in plain text!)', {value: get_checked(session[:display_all])})
+        html_dsl.post_button('Update View')
+      end
+
+      # Accounts table
       html_dsl.div() do
         account_html = create_account_table(accounts)
         html_dsl.inject(account_html)
       end
 
+      # Managing accounts
       html_dsl.div({classes: [@styles.inline_div]}) do
         create_account_management(html_dsl)
       end
 
+      # Selecting categories
       html_dsl.div({classes: [@styles.inline_div]}) do
         show_categories(html_dsl)
       end
@@ -49,6 +59,7 @@ class AccountController < ApplicationController
 
   def add(params)
     encrypt_password(params)
+    params[:account].delete(:display_all)     # This field is not part of the account model.
     acct = Account.new({user_id: session[:user_id]}.merge(params[:account]))
     acct.save()
 
@@ -112,9 +123,38 @@ class AccountController < ApplicationController
     nil
   end
 
-  # TODO: Replace with a real tree-view, rather than one generated from nested tables.
+  def update_view(params)
+    session[:display_all] = !!params[:account][:display_all]     # !! because !nil is true, and !!nil is false.  #same as !...nil?
+  end
+
+  # custom text renderer for the password.
+  def decrypt_password(pwd)
+    user = User.find(session[:user_id])
+    iv = Rails.configuration.iv    # see secret_token.rb
+    Encryptor.decrypt(value: Base64.decode64(pwd.encode('ascii-8bit')), key: user.password_hash, iv: iv, salt: user.password_salt)
+  end
+
+  # TODO: URL should be a link!  See note on having a field dictionary that specifies the "control" used to display the data.
   def create_account_table(accounts, options={})
-    account_html = create_table_view(accounts, 'account_list', ["name", 'url', 'due_on', 'notes'], {show_checkbox_for_row: true}.merge(options)) {}
+    opts = {show_checkbox_for_row: true}.merge(options)
+
+    if session[:display_all]
+      # custom text renderer for the password.
+      opts.merge!({custom_text_renderers: {password: lambda(&method(:decrypt_password))}})
+
+      # Alternatively, we could define a proc:
+      # decrypt_password = Proc.new do |pwd|
+      #   user = User.find(session[:user_id])
+      #   iv = Rails.configuration.iv    # see secret_token.rb
+      #   Encryptor.decrypt(value: Base64.decode64(pwd.encode('ascii-8bit')), key: user.password_hash, iv: iv, salt: user.password_salt)
+      # end
+      # And call specify the renderer this way:
+      # opts.merge!({custom_text_renderers: {password: decrypt_password}})
+
+      account_html = create_table_view(accounts, 'account_list', ["name", 'acct_number', 'url', 'due_on', 'notes', 'username', 'password'], opts)
+    else
+      account_html = create_table_view(accounts, 'account_list', ["name", 'url', 'due_on', 'notes'], opts)
+    end
 
     account_html
   end
@@ -145,7 +185,13 @@ class AccountController < ApplicationController
   def create_edit_boxes_for(html_dsl, fields)
     fields.each do |field|
       html_dsl.label("#{field.gsub('_', ' ').capitalize}:", {classes: [@styles.input_label]})
-      html_dsl.text_field({field_name: field})
+
+      # TODO: Provide a mechanism (like a field dictionary) to specify the inplementing control and label text.  See Airity demo.
+      if field=='password'
+         html_dsl.password_field({field_name: field, autocomplete: false})
+      else
+        html_dsl.text_field({field_name: field, autocomplete: false})
+      end
       html_dsl.line_break()
     end
   end

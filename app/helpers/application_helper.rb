@@ -73,28 +73,40 @@ module ApplicationHelper
       columns.each_with_index do |column, idx|
         table_data_node = xdoc.create_element('td')
 
+        text = row[column].to_s
+
+        # Replace text with a custom specified renderer.
+        if options[:custom_text_renderers]
+          renderers = options[:custom_text_renderers]
+          if renderers[column.to_sym]
+            text = renderers[column.to_sym].call(text)
+          end
+        end
+
         # show checkboxes for each column and row.
         if options[:show_checkboxes]
           input_node = xdoc.create_element('input')
           input_node.append_attribute(xdoc.create_attribute('type', 'checkbox'))
           input_node.append_attribute(xdoc.create_attribute('name', "#{table_name}[record_#{row[:id]}]"))
-          input_node.inner_text = row[column].to_s
+          input_node.inner_text = text
           table_data_node.append_child(input_node)
         # show checkboxes for only the first column.
         elsif options[:show_checkbox_first_column] && idx == 0
           input_node = xdoc.create_element('input')
           input_node.append_attribute(xdoc.create_attribute('type', 'checkbox'))
           input_node.append_attribute(xdoc.create_attribute('name', "#{table_name}[record_#{row[:id]}]"))
-          input_node.inner_text = row[column].to_s
+          input_node.inner_text = text
           table_data_node.append_child(input_node)
         else
-          table_data_node.inner_text = row[column].to_s
+          table_data_node.inner_text = text
         end
 
         table_row_node.append_child(table_data_node)
 
         # Allow caller to specify additional HTML in the <td>, for example to allow nesting of tables.
-        yield(row, table_data_node)
+        if block_given?
+          yield(row, table_data_node)
+        end
       end
     end
 
@@ -140,6 +152,14 @@ module ApplicationHelper
   # parse the "[recordNname]_[n]" string and return only [n]
   def get_record_id(record)
     record[0].partition('_').last.to_i
+  end
+
+  def get_checked(val)
+    if val
+      true
+    else
+      false
+    end
   end
 
 end
