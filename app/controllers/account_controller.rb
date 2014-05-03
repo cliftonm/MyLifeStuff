@@ -9,6 +9,7 @@ class AccountController < ApplicationController
   before_filter :authenticate_user
 
   # TODO: Filter by category
+  # TODO: Show assigned categories
   def show
     @styles = AppStyles.new()
     @page_style = @styles.css.html_safe
@@ -130,11 +131,17 @@ class AccountController < ApplicationController
 
   # custom text renderer for the password.
   def decrypt_password(pwd)
-    # see secret_token.rb
-    iv = Rails.configuration.iv
-    key = Rails.configuration.key
-    salt = Rails.configuration.salt
-    Encryptor.decrypt(value: Base64.decode64(pwd.encode('ascii-8bit')), key: key, iv: iv, salt: salt)
+    ret = ''
+
+    unless pwd.blank?
+      # see secret_token.rb
+      iv = Rails.configuration.iv
+      key = Rails.configuration.key
+      salt = Rails.configuration.salt
+      ret = Encryptor.decrypt(value: Base64.decode64(pwd.encode('ascii-8bit')), key: key, iv: iv, salt: salt)
+    end
+
+    ret
   end
 
   # TODO: URL should be a link!  See note on having a field dictionary that specifies the "control" used to display the data.
