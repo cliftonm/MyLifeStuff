@@ -34,6 +34,7 @@ class AuthenticationController < ApplicationController
       update_authentication_token(user, nil)
       user.save
       session[:user_id] = nil
+      session[:display_all] = nil
       flash[:notice] = "You have been signed out."
     else
       redirect_to :sign_in

@@ -8,6 +8,7 @@ include StyleHelper
 class AccountController < ApplicationController
   before_filter :authenticate_user
 
+  # TODO: Filter by category
   def show
     @styles = AppStyles.new()
     @page_style = @styles.css.html_safe
@@ -129,9 +130,11 @@ class AccountController < ApplicationController
 
   # custom text renderer for the password.
   def decrypt_password(pwd)
-    user = User.find(session[:user_id])
-    iv = Rails.configuration.iv    # see secret_token.rb
-    Encryptor.decrypt(value: Base64.decode64(pwd.encode('ascii-8bit')), key: user.password_hash, iv: iv, salt: user.password_salt)
+    # see secret_token.rb
+    iv = Rails.configuration.iv
+    key = Rails.configuration.key
+    salt = Rails.configuration.salt
+    Encryptor.decrypt(value: Base64.decode64(pwd.encode('ascii-8bit')), key: key, iv: iv, salt: salt)
   end
 
   # TODO: URL should be a link!  See note on having a field dictionary that specifies the "control" used to display the data.
@@ -205,15 +208,16 @@ class AccountController < ApplicationController
     password = params[:account][:password]
 
     unless password.blank?                # if a password has been specified, encrypt it...
-      #TODO: update this so it uses a public/private key that has been set up on the user's machine or some other mechanism such that the decryption can only occur with something the user provides locally.
-      user = User.find(session[:user_id])
-      iv = Rails.configuration.iv    # see secret_token.rb
-      enc_pwd = Encryptor.encrypt(value: password, key: user.password_hash, iv: iv, salt: user.password_salt)
+      # TODO: update this so it uses a public/private key that has been set up on the user's machine or some other mechanism such that the decryption can only occur with something the user provides locally.
+
+      # see secret_token.rb
+      iv = Rails.configuration.iv
+      key = Rails.configuration.key
+      salt = Rails.configuration.salt
+
+      enc_pwd = Encryptor.encrypt(value: password, key: key, iv: iv, salt: salt)
       enc_pwd2 = Base64.encode64(enc_pwd).encode('utf-8')       # convert to UTF-8 so it's compatible with database string.  Probably not necessary if we used a binary data type.
       params[:account][:password] = enc_pwd2
-
-      # to decode:
-      # Encryptor.decrypt(value: Base64.decode64(enc_pwd2.encode('ascii-8bit')), key: user.password_hash, iv: iv, salt: user.password_salt)
     end
   end
 end
