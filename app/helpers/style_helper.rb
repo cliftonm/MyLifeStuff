@@ -63,6 +63,7 @@ module StyleHelper
         @styles =
             {
                 direction: 'ltr',
+                float: 'left'
             }
       }
 
