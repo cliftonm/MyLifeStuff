@@ -10,6 +10,7 @@ class ContactController < ApplicationController
 
   # TODO: Filter by category
   # TODO: Show assigned categories
+  # TODO: Lots of things to help the user clean up their contacts: switch first/last name, display specific columns, etc.  See the contact controller I created:    http://marcclifton.wordpress.com/2014/04/26/a-contact-list-viewer-in-ruby-using-jquery-jquery-ui-and-jquery-tablesorter/
   def show
     @styles = AppStyles.new()
     @page_style = @styles.css.html_safe
@@ -19,10 +20,14 @@ class ContactController < ApplicationController
     html_dsl.form("contact", {id: 'contact_form', action: 'contact', authenticity_token: form_authenticity_token}) do
 
       # Contacts table
-      html_dsl.div() do
-        contact_html = create_contact_table(contacts)
+      # This table is interesting in that I put the scrollbar on the left by fussing with the rtl and ltr direction style of the div and table.
+      html_dsl.div({classes: [@styles.scrollable_div300]}) do
+        contact_html = create_contact_table(contacts, {class: 'contact-table'})
         html_dsl.inject(contact_html)
       end
+
+      # Fill remaining space to the right.
+      html_dsl.div({classes: [@styles.div_fill]}) {}
 
       # Managing contacts
       html_dsl.div({classes: [@styles.inline_div]}) do
@@ -37,7 +42,7 @@ class ContactController < ApplicationController
       html_dsl.div({classes: [@styles.clear_both]}) {}
 
       html_dsl.line_break()
-      html_dsl.label('CSV to Import:')
+      html_dsl.label('CSV to Import (Google Contact export format):')
       html_dsl.line_break()
       html_dsl.text_area({field_name: 'import_text', rows: '10', columns: '80'})
       html_dsl.line_break()
@@ -58,12 +63,74 @@ class ContactController < ApplicationController
     nil
   end
 
-  def import
+  # TODO: specify delimiter and column mapping, specify whether header exists.
+  def import(params)
+    if lines = params[:contact][:import_text]
+      lines = params[:contact][:import_text].gsub("\n", '').split("\r")
+      if lines.count >= 2
+        header_labels = lines[0].split(',')
+        lines.delete_at(0)                        # remove the header
+
+        lines.each do |line|
+          fields = line.split(',')                # get fields
+
+          if fields.count >= 5                    # skip blank lines and short data
+            name = fields[0].split(' ')           # split name into first name and last name
+            first_name = name[0]                  # address books can be a mess, so we're just assuming first name is first.
+            last_name = ''                        # Assume no last name is provided.
+
+            # If the name is something like "John Van Burk" then the first name will be "John" and the last name "Van Burk"
+            if name.count >= 2
+              last_name = name[1..-1].join(' ')     # concat rest of name data.
+            end
+
+            # The google contacts export will have phone numbers like this:
+            # Home,<home phone #>,
+            # Work,<work phone #>,
+            # Mobile,<cell phone #>,
+            # If there's multiple phone #'s for a category, they will appear as <phone #> ::: <phone #>  (yes, literally " ::: " with the spaces.)
+            # Example:
+            # Emma,,,Emma,,,,,,,,,,,,,,,,,,,,,,,* My Contacts,,,Home,5183290085,Mobile,5188211924 ::: 8577531441,,,,
+
+            work_phone = get_phone('Work', header_labels, fields)
+            home_phone = get_phone('Home', header_labels, fields)
+            cell_phone = get_phone('Mobile', header_labels, fields)
+            email = fields[header_labels.index('E-mail 1 - Value')]
+            website = fields[header_labels.index('Website 1 - Value')]
+
+            contact = Contact.new({user_id: session[:user_id], first_name: first_name, last_name: last_name, home_phone: home_phone, work_phone: work_phone, cell_phone: cell_phone, email: email, website: website})
+            contact.save()
+          end
+        end
+      else
+        flash[:notice] = 'Please provide some data besides the header to import.'
+      end
+    else
+      flash[:notice] = 'Please provide some data to import.'
+    end
 
     nil
   end
 
   private
+
+  # Returns the phone number given the type, using the Google+ header export format.
+  def get_phone(type, header_labels, fields)
+    ret = ''
+    phone1_idx = header_labels.index('Phone 1 - Type')
+    phone2_idx = header_labels.index('Phone 2 - Type')
+    phone3_idx = header_labels.index('Phone 3 - Type')
+
+    if fields[phone1_idx] == type
+      ret = fields[phone1_idx + 1]
+    elsif fields[phone2_idx] == type
+      ret = fields[phone2_idx + 1]
+    elsif fields[phone3_idx] == type
+      ret = fields[phone3_idx + 1]
+    end
+
+    ret
+  end
 
   def add(params)
     params[:contact].delete(:import_text)     # This field is not part of the contact model.

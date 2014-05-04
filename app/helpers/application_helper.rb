@@ -17,6 +17,12 @@ module ApplicationHelper
   def create_table_view(table, table_name, columns, options = {}, &block)
     xdoc = XmlDocument.new()
     table_node = xdoc.create_element('table')
+
+    # append a class name for specific styling.
+    if options[:class]
+      table_node.append_attribute(xdoc.create_attribute('class', options[:class]))
+    end
+
     xdoc.append_child(table_node)
 
     # We may not want to display the header, for example, nested tables in a "tree view" kind of display.

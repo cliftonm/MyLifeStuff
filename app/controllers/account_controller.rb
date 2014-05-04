@@ -25,10 +25,14 @@ class AccountController < ApplicationController
       end
 
       # Accounts table
-      html_dsl.div() do
-        account_html = create_account_table(accounts)
+      # This table is interesting in that I put the scrollbar on the left by fussing with the rtl and ltr direction style of the div and table.
+      html_dsl.div({classes: [@styles.scrollable_div300]}) do
+        account_html = create_account_table(accounts, {class: 'account-table'})
         html_dsl.inject(account_html)
       end
+
+      # Fill remaining space to the right.
+      html_dsl.div({classes: [@styles.div_fill]}) {}
 
       # Managing accounts
       html_dsl.div({classes: [@styles.inline_div]}) do
