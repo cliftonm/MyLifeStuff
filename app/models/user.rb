@@ -25,6 +25,7 @@ class User < ActiveRecord::Base
   # table references:
   has_many :categories, dependent: :destroy       # categories.user_id is FK to user.id with cascading deletes
   has_many :accounts, dependent: :destroy         # accounts.user_id is FK to user.id with cascading deletes
+  has_many :contacts, dependent: :destroy         # contacts.user_id is FK to user.id with cascading deletes
 
   def initialize(attributes = {})
     super     # must allow the active record to initialize!

@@ -94,6 +94,18 @@ module Airity
     auto_complete
   end
 
+  def get_rows(options)
+    rows = options[:rows]
+
+    rows
+  end
+
+  def get_columns(options)
+    columns = options[:columns]
+
+    columns
+  end
+
   def get_value(options)
     value = options[:value]
 

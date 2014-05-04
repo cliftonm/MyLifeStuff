@@ -44,7 +44,7 @@ module ApplicationHelper
 
     columns.each do |column|
       table_heading_node = xdoc.create_element('th')
-      table_heading_node.inner_text = column.capitalize
+      table_heading_node.inner_text = column.gsub('_', ' ').capitalize
       table_row_node.append_child(table_heading_node)
     end
 

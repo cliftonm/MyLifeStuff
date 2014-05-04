@@ -4,6 +4,7 @@ class Account < ActiveRecord::Base
   # table references:
   has_many :account_categories, dependent: :destroy      # account_category.account_id is FK to account.id
   has_many :categories, through: :account_categories     # traverse m:m table to get to all the categories.
+  belongs_to :user                                  # FK user_id => user.id
 
   def initialize(attributes = {})
     super     # initialize active record.

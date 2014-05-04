@@ -232,6 +232,38 @@ module Airity
       nil
     end
 
+    def text_area(model_name, field_name = nil, id = nil, klass = nil, data = nil, value = nil, auto_complete = true, rows = nil, columns = nil)
+      element = @xdoc.create_element('textarea')
+      @current_node.append_child(element)
+
+      # TODO: throw exception if both field_name and id are specified
+      element.append_attribute(@xdoc.create_attribute('id', model_name + '_' + field_name)) if field_name
+      element.append_attribute(@xdoc.create_attribute('id', id)) if id
+
+      element.append_attribute(@xdoc.create_attribute('name', model_name + bracket(field_name))) if field_name
+
+      element.append_attribute(@xdoc.create_attribute('class', klass)) if klass
+      element.append_attribute(@xdoc.create_attribute('type', 'text'))
+      element.append_attribute(@xdoc.create_attribute('rows', rows)) if rows
+      element.append_attribute(@xdoc.create_attribute('cols', columns)) if columns
+
+      element.append_attribute(@xdoc.create_attribute('value', value)) if value
+
+      unless auto_complete       # if not wanting autocomplete
+        element.append_attribute(@xdoc.create_attribute('autocomplete', 'off'))
+      end
+
+      # TODO: Duplicate code
+      if data
+        data.each {|item|
+          item = item.gsub('_', '-')
+          element.append_attribute(@xdoc.create_attribute(item, nil))
+        }
+      end
+
+      nil
+    end
+
     # TODO: All but the last line is code duplication of text_field
     def password_field(model_name, field_name = nil, id = nil, klass = nil, auto_complete = true)
       element = @xdoc.create_element('input')

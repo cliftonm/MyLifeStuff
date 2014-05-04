@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 9) do
+ActiveRecord::Schema.define(:version => 11) do
 
   create_table "account_categories", :force => true do |t|
     t.integer "account_id"
@@ -33,6 +33,23 @@ ActiveRecord::Schema.define(:version => 9) do
     t.integer "user_id"
     t.integer "category_id"
     t.string  "name"
+  end
+
+  create_table "contact_categories", :force => true do |t|
+    t.integer "contact_id"
+    t.integer "category_id"
+  end
+
+  create_table "contacts", :force => true do |t|
+    t.integer "user_id"
+    t.string  "home_phone"
+    t.string  "cell_phone"
+    t.string  "work_phone"
+    t.string  "email"
+    t.string  "website"
+    t.string  "address"
+    t.string  "first_name"
+    t.string  "last_name"
   end
 
   create_table "users", :force => true do |t|

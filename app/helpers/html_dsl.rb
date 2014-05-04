@@ -146,6 +146,22 @@ module Airity
       nil
     end
 
+    def text_area(options = {})
+      class_names = get_class_names(options)
+      id = get_id(options)
+      field_name = get_field_name(options)
+      data = get_data(options)
+      model = get_model(options)
+      auto_complete = get_auto_complete(options)
+      rows = get_rows(options)
+      columns = get_columns(options)
+      model ||= @current_model_name
+      value = get_value(options)
+      @html_gen.text_area(model, field_name, id, class_names, data, value, auto_complete, rows, columns)
+
+      nil
+    end
+
     def password_field(options = {})
       class_names = get_class_names(options)
       id = get_id(options)

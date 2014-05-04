@@ -66,6 +66,7 @@ class AccountController < ApplicationController
     acct.save()
 
     # save associated categories.
+    # TODO: Duplicate code.  See below.  Also see other controllers.
     if params[:category_list]
       params[:category_list].each do |cat|
         # One way to do this, if id's are exposed as attr_accessible:
@@ -83,6 +84,8 @@ class AccountController < ApplicationController
 
   def update_selected(params)
     if one_and_only_one_selection(params)
+      encrypt_password(params)
+      params[:account].delete(:display_all)     # This field is not part of the account model.
       record_id = get_record_id(params[:account_list].first)
       acct = Account.find(record_id)
       # TODO: IMPLEMENT!
@@ -92,6 +95,7 @@ class AccountController < ApplicationController
       # update selected categories
       acct.categories.delete_all()                # delete all associated categories
       # recreate the associated categories
+      # TODO: Duplicate code.  See above.
       if params[:category_list]
         params[:category_list].each do |cat|
           # One way to do this, if id's are exposed as attr_accessible:
