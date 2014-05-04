@@ -39,19 +39,28 @@ module ApplicationHelper
   def create_table_header(xdoc, table_node, columns, options = {})
     table_head_node = xdoc.create_element('thead')
     table_node.append_child(table_head_node)
+
     table_row_node = xdoc.create_element('tr')
     table_head_node.append_child(table_row_node)
 
-    # create an empty column if showing a checkbox for the row.
-    if options[:show_checkbox_for_row]
+    if options[:one_column_per_row]
+      # create two empty columns, in which we will put the data as "column name:" | "data"
       table_heading_node = xdoc.create_element('th')
       table_row_node.append_child(table_heading_node)
-    end
+    else
+      # create an empty column if showing a checkbox for the row.
+      if options[:show_checkbox_for_row]
+        table_heading_node = xdoc.create_element('th')
+        table_row_node.append_child(table_heading_node)
+      end
 
-    columns.each do |column|
-      table_heading_node = xdoc.create_element('th')
-      table_heading_node.inner_text = column.gsub('_', ' ').capitalize
-      table_row_node.append_child(table_heading_node)
+      columns.each do |column|
+        table_heading_node = xdoc.create_element('th')
+        table_heading_node.inner_text = column.gsub('_', ' ').titleize
+        # titleize is a Rails function.  For straight Ruby:
+        # "kirk douglas".split(" ").map(&:capitalize).join(" ")
+        table_row_node.append_child(table_heading_node)
+      end
     end
 
     nil
@@ -63,55 +72,154 @@ module ApplicationHelper
     table_node.append_child(table_body_node)
 
     table.each do |row|
-      table_row_node = xdoc.create_element('tr')
-      table_body_node.append_child(table_row_node)
+      if options[:one_column_per_row]
+        # first row is just a checkbox.
+        # TODO: Caller should be able to label this checkbox perhaps.
+        if options[:show_checkbox_for_row]
+          table_row_node = xdoc.create_element('tr')
+          table_body_node.append_child(table_row_node)
 
-      # show checkbox in the first column separate from all other data columns
-      if options[:show_checkbox_for_row]
-        table_data_node = xdoc.create_element('td')
-        input_node = xdoc.create_element('input')
-        input_node.append_attribute(xdoc.create_attribute('type', 'checkbox'))
-        input_node.append_attribute(xdoc.create_attribute('name', "#{table_name}[record_#{row[:id]}]"))
-        table_data_node.append_child(input_node)
-        table_row_node.append_child(table_data_node)
-      end
+          # first row, add a class allowing us to delineate records by some styling
+          table_row_node.append_attribute(xdoc.create_attribute('class', 'next-record'))
 
-      columns.each_with_index do |column, idx|
-        table_data_node = xdoc.create_element('td')
+          table_data_node = xdoc.create_element('td')
+          input_node = xdoc.create_element('input')
+          input_node.append_attribute(xdoc.create_attribute('type', 'checkbox'))
+          input_node.append_attribute(xdoc.create_attribute('name', "#{table_name}[record_#{row[:id]}]"))
+          table_data_node.append_child(input_node)
+          table_row_node.append_child(table_data_node)
+        end
 
-        text = row[column].to_s
+        # next, each column is a separate row
+        columns.each_with_index do |column, idx|
+          table_row_node = xdoc.create_element('tr')
+          table_body_node.append_child(table_row_node)
 
-        # Replace text with a custom specified renderer.
-        if options[:custom_text_renderers]
-          renderers = options[:custom_text_renderers]
-          if renderers[column.to_sym]
-            text = renderers[column.to_sym].call(text)
+          if idx == 0 && !options[:show_checkbox_for_row]
+            # first row, add a class allowing us to delineate records by some styling
+            table_row_node.append_attribute(xdoc.create_attribute('class', 'next-record'))
+          end
+
+          # TODO : This is all hardcoded for notes right now
+          # See here: http://jsfiddle.net/NVx4S/21/
+          # The idea is to show/hide the note itself when the user clicks on the subject line.
+          if idx==0
+            # the first column is the field name
+            table_data_node = xdoc.create_element('td')
+            table_data_node.append_attribute(xdoc.create_attribute('class', 'clickme'))
+
+            table_data_node.inner_text = column.gsub('_', ' ').titleize + ':'
+            table_row_node.append_child(table_data_node)
+
+            # the second column is the data
+            table_data_node = xdoc.create_element('td')
+            table_data_node.append_attribute(xdoc.create_attribute('class', 'clickme'))
+
+            text = row[column].to_s
+
+            # Replace text with a custom specified renderer.
+            if options[:custom_text_renderers]
+              renderers = options[:custom_text_renderers]
+              if renderers[column.to_sym]
+                text = renderers[column.to_sym].call(text)
+              end
+            end
+
+            table_data_node.inner_text = text
+            table_row_node.append_child(table_data_node)
+          else
+            # second row
+            # just display the data (the note)
+            table_row_node.append_attribute(xdoc.create_attribute('class', 'hideme'))
+            table_data_node = xdoc.create_element('td')
+            table_data_node.append_attribute(xdoc.create_attribute('colspan', '2'))
+            table_row_node.append_child(table_data_node)
+            div = xdoc.create_element('div')
+            table_data_node.append_child(div)
+
+            text = row[column].to_s
+
+            # Replace text with a custom specified renderer.
+            if options[:custom_text_renderers]
+              renderers = options[:custom_text_renderers]
+              if renderers[column.to_sym]
+                text = renderers[column.to_sym].call(text)
+              end
+            end
+
+            div.inner_text = text
+
+=begin
+            # the second column is the data
+            table_data_node = xdoc.create_element('td')
+            table_data_node.append_attribute(xdoc.create_attribute('class', 'clickme'))
+
+            text = row[column].to_s
+
+            # Replace text with a custom specified renderer.
+            if options[:custom_text_renderers]
+              renderers = options[:custom_text_renderers]
+              if renderers[column.to_sym]
+                text = renderers[column.to_sym].call(text)
+              end
+            end
+
+            table_data_node.inner_text = text
+            table_row_node.append_child(table_data_node)
+=end
           end
         end
+      else
+        table_row_node = xdoc.create_element('tr')
+        table_body_node.append_child(table_row_node)
 
-        # show checkboxes for each column and row.
-        if options[:show_checkboxes]
+        # show checkbox in the first column separate from all other data columns
+        if options[:show_checkbox_for_row]
+          table_data_node = xdoc.create_element('td')
           input_node = xdoc.create_element('input')
           input_node.append_attribute(xdoc.create_attribute('type', 'checkbox'))
           input_node.append_attribute(xdoc.create_attribute('name', "#{table_name}[record_#{row[:id]}]"))
-          input_node.inner_text = text
           table_data_node.append_child(input_node)
-        # show checkboxes for only the first column.
-        elsif options[:show_checkbox_first_column] && idx == 0
-          input_node = xdoc.create_element('input')
-          input_node.append_attribute(xdoc.create_attribute('type', 'checkbox'))
-          input_node.append_attribute(xdoc.create_attribute('name', "#{table_name}[record_#{row[:id]}]"))
-          input_node.inner_text = text
-          table_data_node.append_child(input_node)
-        else
-          table_data_node.inner_text = text
+          table_row_node.append_child(table_data_node)
         end
 
-        table_row_node.append_child(table_data_node)
+        columns.each_with_index do |column, idx|
+          table_data_node = xdoc.create_element('td')
 
-        # Allow caller to specify additional HTML in the <td>, for example to allow nesting of tables.
-        if block_given?
-          yield(row, table_data_node)
+          text = row[column].to_s
+
+          # Replace text with a custom specified renderer.
+          if options[:custom_text_renderers]
+            renderers = options[:custom_text_renderers]
+            if renderers[column.to_sym]
+              text = renderers[column.to_sym].call(text)
+            end
+          end
+
+          # show checkboxes for each column and row.
+          if options[:show_checkboxes]
+            input_node = xdoc.create_element('input')
+            input_node.append_attribute(xdoc.create_attribute('type', 'checkbox'))
+            input_node.append_attribute(xdoc.create_attribute('name', "#{table_name}[record_#{row[:id]}]"))
+            input_node.inner_text = text
+            table_data_node.append_child(input_node)
+          # show checkboxes for only the first column.
+          elsif options[:show_checkbox_first_column] && idx == 0
+            input_node = xdoc.create_element('input')
+            input_node.append_attribute(xdoc.create_attribute('type', 'checkbox'))
+            input_node.append_attribute(xdoc.create_attribute('name', "#{table_name}[record_#{row[:id]}]"))
+            input_node.inner_text = text
+            table_data_node.append_child(input_node)
+          else
+            table_data_node.inner_text = text
+          end
+
+          table_row_node.append_child(table_data_node)
+
+          # Allow caller to specify additional HTML in the <td>, for example to allow nesting of tables.
+          if block_given?
+            yield(row, table_data_node)
+          end
         end
       end
     end

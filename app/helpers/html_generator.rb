@@ -191,8 +191,8 @@ module Airity
       element = @xdoc.create_element('label')
       @current_node.append_child(element)
 
-      # TODO: throw exception if both field_name and id are specified
-      element.append_attribute(@xdoc.create_attribute('id', 'lbl_' + field_name)) if field_name
+      # ID will be used if supplied.
+      element.append_attribute(@xdoc.create_attribute('id', 'lbl_' + field_name)) if field_name && id.nil?
       element.append_attribute(@xdoc.create_attribute('id', id)) if id
 
       element.append_attribute(@xdoc.create_attribute('class', klass)) if klass
@@ -206,8 +206,8 @@ module Airity
       element.html_closing_tag = false
       @current_node.append_child(element)
 
-      # TODO: throw exception if both field_name and id are specified
-      element.append_attribute(@xdoc.create_attribute('id', model_name + '_' + field_name)) if field_name
+      # ID will be used if supplied.
+      element.append_attribute(@xdoc.create_attribute('id', model_name + '_' + field_name)) if field_name && id.nil?
       element.append_attribute(@xdoc.create_attribute('id', id)) if id
 
       element.append_attribute(@xdoc.create_attribute('name', model_name + bracket(field_name))) if field_name
@@ -236,8 +236,8 @@ module Airity
       element = @xdoc.create_element('textarea')
       @current_node.append_child(element)
 
-      # TODO: throw exception if both field_name and id are specified
-      element.append_attribute(@xdoc.create_attribute('id', model_name + '_' + field_name)) if field_name
+      # ID will be used if supplied.
+      element.append_attribute(@xdoc.create_attribute('id', model_name + '_' + field_name)) if field_name && id.nil?
       element.append_attribute(@xdoc.create_attribute('id', id)) if id
 
       element.append_attribute(@xdoc.create_attribute('name', model_name + bracket(field_name))) if field_name

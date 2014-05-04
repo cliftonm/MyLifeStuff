@@ -1,0 +1,14 @@
+<%= @page_style %>
+<%= @note_html %>
+<script type="text/javascript">
+    //<![CDATA[
+    if (typeof CKEDITOR != 'undefined') { CKEDITOR.replace('note_control'); }
+
+    $('.hideme').find('div').hide();
+    $('.clickme').click(function() {
+        $(this).parent().next('.hideme').find('div').slideToggle(500);
+        return false;
+    });
+    //]]>
+</script>
+

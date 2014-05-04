@@ -8,6 +8,11 @@ include StyleHelper
 class ContactController < ApplicationController
   before_filter :authenticate_user
 
+  def initialize
+    super()
+    @contact_fields = ['first_name', 'last_name', 'home_phone', 'work_phone', 'cell_phone', 'email', 'address', 'website']
+  end
+
   # TODO: Filter by category
   # TODO: Show assigned categories
   # TODO: Lots of things to help the user clean up their contacts: switch first/last name, display specific columns, etc.  See the contact controller I created:    http://marcclifton.wordpress.com/2014/04/26/a-contact-list-viewer-in-ruby-using-jquery-jquery-ui-and-jquery-tablesorter/
@@ -204,7 +209,7 @@ class ContactController < ApplicationController
   # TODO: Website should be a link!  See note on having a field dictionary that specifies the "control" used to display the data.
   def create_contact_table(contacts, options={})
     opts = {show_checkbox_for_row: true}.merge(options)
-    contact_html = create_table_view(contacts, 'contact_list', ['first_name', 'last_name', 'home_phone', 'work_phone', 'cell_phone', 'email', 'address', 'website'], opts)
+    contact_html = create_table_view(contacts, 'contact_list', @contact_fields, opts)
 
     contact_html
   end
@@ -213,7 +218,7 @@ class ContactController < ApplicationController
   # TODO: See here:  http://www.jquery4u.com/menus/right-click-context-menu-plugins/ or here: http://www.tweego.nl/jeegoocontext (the latter looking preferable)
   def create_contact_management(html_dsl)
     html_dsl.div() do
-      create_edit_boxes_for(html_dsl, ['first_name', 'last_name', 'home_phone', 'work_phone', 'cell_phone', 'email', 'address', 'website'])
+      create_edit_boxes_for(html_dsl, @contact_fields)
       html_dsl.line_break()
       html_dsl.post_button('Add')
       html_dsl.line_break()

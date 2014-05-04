@@ -26,6 +26,9 @@ class CategoryController < ApplicationController
     nil
   end
 
+  # TODO: Review "advanced contraints" to see if this could be better handled by declaring the routes:
+  # http://stackoverflow.com/questions/3332449/rails-multi-submit-buttons-in-one-form
+  # Conversely, maybe use link_to and change the styling so it looks like a button?
   def post
     # Ex: Convert "Delete Selected" to "delete_selected"
     method_name = params[:commit].downcase.gsub(' ', '_')

@@ -1,5 +1,5 @@
 class ContactCategory < ActiveRecord::Base
-#  attr_accessible :category_id, :account_id
+#  attr_accessible :category_id, :contact_id
 
 # table references:
   belongs_to :contact                               # FK contact_id => contact.id

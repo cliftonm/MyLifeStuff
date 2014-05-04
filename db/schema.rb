@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 11) do
+ActiveRecord::Schema.define(:version => 13) do
 
   create_table "account_categories", :force => true do |t|
     t.integer "account_id"
@@ -50,6 +50,19 @@ ActiveRecord::Schema.define(:version => 11) do
     t.string  "address"
     t.string  "first_name"
     t.string  "last_name"
+  end
+
+  create_table "note_categories", :force => true do |t|
+    t.integer "note_id"
+    t.integer "category_id"
+  end
+
+  create_table "notes", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "subject"
+    t.text     "note"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "users", :force => true do |t|

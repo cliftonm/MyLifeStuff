@@ -204,7 +204,7 @@ class AccountController < ApplicationController
     fields.each do |field|
       html_dsl.label("#{field.gsub('_', ' ').capitalize}:", {classes: [@styles.input_label]})
 
-      # TODO: Provide a mechanism (like a field dictionary) to specify the inplementing control and label text.  See Airity demo.
+      # TODO: Provide a mechanism (like a field dictionary) to specify the implementing control and label text.  See Airity demo.
       if field=='password'
          html_dsl.password_field({field_name: field, autocomplete: false})
       else

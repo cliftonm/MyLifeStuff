@@ -63,7 +63,8 @@ module StyleHelper
         @styles =
             {
                 direction: 'ltr',
-                float: 'left'
+                float: 'left',
+                width: '500px'
             }
       }
 
@@ -77,6 +78,26 @@ module StyleHelper
             }
       }
 
+      # The outer div is rtl, putting the scrollbar on the left, so we need to specify the ltr for the table contents.
+      @note_table = Style.new {
+        @style_name = 'note-table'
+        @styles =
+            {
+                direction: 'ltr',
+                float: 'left'
+            }
+      }
+
+      # not exposed as a public property.
+      next_record = Style.new {
+        @style_name = 'next-record'
+        @styles =
+            {
+                display: 'table',               # Very necessary to get borders/margins to work!  http://stackoverflow.com/questions/670424/border-around-specific-rows-in-a-table
+                border_top: '2px solid #000080',
+                width: '100%'
+            }
+      }
       styles =
           [
               @input_label.get_css(),
@@ -85,7 +106,9 @@ module StyleHelper
               @scrollable_div300.get_css(),
               @contact_table.get_css(),
               @account_table.get_css(),
+              @note_table.get_css(),
               @div_fill.get_css(),
+              next_record.get_css(),
           ]
 
       @css = "\r\n<style type='text/css'>\r\n" + styles.join("\r\n") + "</style>\r\n"

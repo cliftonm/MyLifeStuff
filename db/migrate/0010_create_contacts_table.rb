@@ -10,12 +10,12 @@ class CreateContactsTable < ActiveRecord::Migration
       t.column :website, :string
       t.column :address, :string
     end
-  end
 
-  # setup many-to-many table
-  create_table :contact_categories do |t|
-    t.belongs_to :contact     # FK to contact.id
-    t.belongs_to :category    # FK to category.id
+    # setup many-to-many table
+    create_table :contact_categories do |t|
+      t.belongs_to :contact     # FK to contact.id
+      t.belongs_to :category    # FK to category.id
+    end
   end
 
   def self.down

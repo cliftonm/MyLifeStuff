@@ -10,13 +10,13 @@ class CreateAccountsTable < ActiveRecord::Migration
       t.column :due_on, :integer
       t.column :notes, :string
     end
-  end
 
-  # setup many-to-many table
-  create_table :account_categories do |t|
-    t.belongs_to :account     # FK to account.id
-    t.belongs_to :category    # FK to category.id
-  end
+    # setup many-to-many table
+    create_table :account_categories do |t|
+      t.belongs_to :account     # FK to account.id
+      t.belongs_to :category    # FK to category.id
+    end
+end
 
   def self.down
     drop_table :account_categories
