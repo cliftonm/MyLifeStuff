@@ -35,12 +35,14 @@ MyLifeStuff::Application.routes.draw do
   get "notes" => "note#show"
   post "note" => "note#post"
 
+  get "tasks" => "task#show"
+  post "task" => "task#post"
+
 
   get "recipes" => "home#not_implemented"
   get "journal" => "home#not_implemented"
   get "kanban" => "home#not_implemented"
   get "coaching" => "home#not_implemented"    # coaching: NVC, tension, how/why/why, facilitated journaling
-  get "tasks" => "home#not_implemented"       # dependent tasks ?
   get "calendar" => "home#not_implemented"
   get "time" => "home#not_implemented"        # time tracker
 

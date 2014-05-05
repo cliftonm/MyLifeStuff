@@ -15,6 +15,7 @@ class NoteController < ApplicationController
 
   # TODO: Filter by category
   # TODO: Show assigned categories
+  # TODO: (And other controllers) scroll selection to top.  See http://jsfiddle.net/SZKJh/1/, change calculation to: row.offset().top-row.height()
   def show
     @styles = AppStyles.new()
     @page_style = @styles.css.html_safe

@@ -263,6 +263,33 @@ module ApplicationHelper
     category_html
   end
 
+  # TODO: Replace with a real tree-view, rather than one generated from nested tables.
+  # TODO: Duplicate code from creating category table.
+  def create_task_table(tasks, options={})
+    task_html = create_table_view(tasks, 'task_list', ["name"], {show_checkboxes: true}.merge(options)) { |task, node|
+      # Process child tasks of the parent that has been passed in.
+      child_tasks = Task.where("task_id = #{task.id}").order('name ASC')
+
+      if child_tasks.count > 0
+        # Use our current XmlDocument and node rather than starting with a new instance.
+        # Allows us to easily continue adding nodes to an existing XmlDocument structure.
+        gen = HtmlGenerator.new() {@xdoc = node.xml_document; @current_node = node}
+        # Indent the child table by 10px.
+        gen.div(nil, nil, 'margin-left:10px')
+        child_html = create_task_table(child_tasks, {no_header: true})
+        gen.inject(child_html)
+        gen.div_end()
+
+        # If you want to add the child table directly, without being wrapped in a div
+        # or using the HtmlGenerator, here's a way you can do it:
+        #        element = node.xml_document.create_xml_fragment(child_html)
+        #        node.append_child(element)
+      end
+    }
+
+    task_html
+  end
+
   # parse the "[recordNname]_[n]" string and return only [n]
   def get_record_id(record)
     record[0].partition('_').last.to_i
