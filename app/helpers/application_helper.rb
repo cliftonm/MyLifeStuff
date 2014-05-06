@@ -315,7 +315,7 @@ module ApplicationHelper
   n = col_start
   field_list.each do |field|
     javascript << "var data = $(this).children(':nth-child(#{n})').text();"
-    javascript << "$('##{model}_#{field}').val(data);"
+    javascript << "$('##{model}_#{field}').val(data.trim());"
     n += 1
   end
 
