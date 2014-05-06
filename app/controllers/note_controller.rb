@@ -156,6 +156,7 @@ class NoteController < ApplicationController
   end
 
   # TODO: Replace with a real tree-view, rather than one generated from nested tables.
+  # TODO: Duplicate code in most controllers.
   def show_categories(html_dsl)
     categories = Category.where("user_id = #{session[:user_id]} and category_id is null").order('name ASC')
     category_html = create_category_table(categories)
