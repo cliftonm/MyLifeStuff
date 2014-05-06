@@ -48,7 +48,8 @@ class NoteController < ApplicationController
     end
 
     @note_html = get_html(html_dsl.html_gen.xdoc).html_safe
-
+    # TODO: Not working correctly.
+    @javascript = create_row_click_javascript('note', @note_fields, 2).html_safe   # javascript for when user clicks on a row to populate edit boxes.
     nil
   end
 
@@ -168,7 +169,7 @@ class NoteController < ApplicationController
       # TODO: Provide a mechanism (like a field dictionary) to specify the implementing control and label text.  See Airity demo.
       if field=='note'
         html_dsl.label("#{field.gsub('_', ' ').capitalize}:")
-        html_dsl.text_area({field_name: 'note', id: 'note_control', rows: '10', columns: '80'})
+        html_dsl.text_area({field_name: 'note', id: 'note_note', rows: '10', columns: '80'})
       else
         html_dsl.label("#{field.gsub('_', ' ').capitalize}:", {classes: [@styles.input_label]})
         html_dsl.text_field({field_name: field, autocomplete: false})

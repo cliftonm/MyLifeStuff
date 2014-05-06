@@ -22,6 +22,8 @@ class CategoryController < ApplicationController
     end
 
     @category_html = get_html(html_dsl.html_gen.xdoc).html_safe
+    # TODO: Nested categories not filling the textbox correctly.
+    @javascript = create_row_click_javascript('category', ['name'], 1).html_safe   # javascript for when user clicks on a row to populate edit boxes.
 
     nil
   end

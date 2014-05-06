@@ -55,6 +55,7 @@ class ContactController < ApplicationController
     end
 
     @contact_html = get_html(html_dsl.html_gen.xdoc).html_safe
+    @javascript = create_row_click_javascript('contact', @contact_fields, 2).html_safe   # javascript for when user clicks on a row to populate edit boxes.
 
     nil
   end

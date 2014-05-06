@@ -1,2 +1,18 @@
 <%= @page_style %>
 <%= @account_html %>
+<%= @javascript %>
+
+<script type="text/javascript">
+//<![CDATA[
+
+$('tr').each(function()
+{
+  $(this).click(function()
+  {
+    var selectedTd = $(this).children(':nth-child(2)').text();
+    $('#account_name').val(selectedTd);
+  });
+});
+
+//]]>
+</script>

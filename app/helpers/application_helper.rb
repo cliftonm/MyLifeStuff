@@ -303,4 +303,25 @@ module ApplicationHelper
     end
   end
 
+  # Creates the javascript to populate the edit boxes with the fields in the selected row.
+  # Requires the model name and the field list.
+  # The edit boxes are expected to have an ID of the form "[model]_[fieldname]"
+  # TODO: Need to check the selected categories as well.
+  def create_row_click_javascript(model, field_list, col_start)
+  javascript = "<script type='text/javascript'>\r\n//<![CDATA[\r\n"
+  javascript << "$('tr').each(function() {\r\n"
+  javascript << "$(this).click(function() {"
+
+  n = col_start
+  field_list.each do |field|
+    javascript << "var data = $(this).children(':nth-child(#{n})').text();"
+    javascript << "$('##{model}_#{field}').val(data);"
+    n += 1
+  end
+
+  javascript << "});"
+  javascript << "});"
+  javascript << "//]]>\r\n</script>\r\n"
+
+  end
 end

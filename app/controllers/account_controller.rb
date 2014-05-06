@@ -13,6 +13,8 @@ class AccountController < ApplicationController
   def show
     @styles = AppStyles.new()
     @page_style = @styles.css.html_safe
+    @full_field_list = ['name', 'url', 'username', 'password', 'acct_number', 'due_on', 'notes']
+    @partial_field_list = ["name", 'url', 'due_on', 'notes']
 
     accounts = Account.where("user_id=#{session[:user_id]}").order('name ASC')
     html_dsl = HtmlDsl.new()
@@ -48,6 +50,7 @@ class AccountController < ApplicationController
     end
 
     @account_html = get_html(html_dsl.html_gen.xdoc).html_safe
+    @javascript = create_row_click_javascript('account', @full_field_list, 2).html_safe   # javascript for when user clicks on a row to populate edit boxes.
 
     nil
   end
@@ -169,9 +172,9 @@ class AccountController < ApplicationController
       # And call specify the renderer this way:
       # opts.merge!({custom_text_renderers: {password: decrypt_password}})
 
-      account_html = create_table_view(accounts, 'account_list', ["name", 'acct_number', 'url', 'due_on', 'notes', 'username', 'password'], opts)
+      account_html = create_table_view(accounts, 'account_list', @full_field_list, opts)
     else
-      account_html = create_table_view(accounts, 'account_list', ["name", 'url', 'due_on', 'notes'], opts)
+      account_html = create_table_view(accounts, 'account_list', @partial_field_list, opts)
     end
 
     account_html
@@ -181,7 +184,7 @@ class AccountController < ApplicationController
   # TODO: See here:  http://www.jquery4u.com/menus/right-click-context-menu-plugins/ or here: http://www.tweego.nl/jeegoocontext (the latter looking preferable)
   def create_account_management(html_dsl)
     html_dsl.div() do
-      create_edit_boxes_for(html_dsl, ['name', 'url', 'username', 'password', 'acct_number', 'due_on', 'notes'])
+      create_edit_boxes_for(html_dsl, @full_field_list)
       html_dsl.line_break()
       html_dsl.post_button('Add')
       html_dsl.line_break()

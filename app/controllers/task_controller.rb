@@ -35,10 +35,10 @@ class TaskController < ApplicationController
       end
 
       html_dsl.div({classes: [@styles.clear_both]}) {}
-
     end
 
     @task_html = get_html(html_dsl.html_gen.xdoc).html_safe
+    @javascript = create_row_click_javascript('task', ['name'], 1).html_safe   # javascript for when user clicks on a row to populate edit boxes.
 
     nil
   end
@@ -137,6 +137,7 @@ class TaskController < ApplicationController
     nil
   end
 
+  # TODO: Duplicated everywhere.
   def delete_selected(params)
     if params[:task_list]
       params[:task_list].each do |record|

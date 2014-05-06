@@ -1,8 +1,10 @@
 <%= @page_style %>
 <%= @note_html %>
+<%= @javascript %>
+
 <script type="text/javascript">
     //<![CDATA[
-    if (typeof CKEDITOR != 'undefined') { CKEDITOR.replace('note_control'); }
+    if (typeof CKEDITOR != 'undefined') { CKEDITOR.replace('note_note'); }
 
     $('.hideme').find('div').hide();
     $('.clickme').click(function() {
