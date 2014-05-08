@@ -308,6 +308,7 @@ module ApplicationHelper
   # The edit boxes are expected to have an ID of the form "[model]_[fieldname]"
   # TODO: Need to check the selected categories as well.
   def create_row_click_javascript(model, field_list, col_start)
+=begin
   javascript = "<script type='text/javascript'>\r\n//<![CDATA[\r\n"
   javascript << "$('tr').each(function() {\r\n"
   javascript << "$(this).click(function() {"
@@ -322,6 +323,8 @@ module ApplicationHelper
   javascript << "});"
   javascript << "});"
   javascript << "//]]>\r\n</script>\r\n"
-
+=end
+  javascript = "<script type='text/javascript'>\r\n//<![CDATA[\r\n"
+  javascript << "//]]>\r\n</script>\r\n"
   end
 end
