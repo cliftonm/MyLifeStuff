@@ -40,7 +40,7 @@ class HomeController < ApplicationController
     @child_data = [r1]
 
     html_dsl = HtmlDsl.new()
-=begin
+
     # A simple table:
     html_dsl.div() do
       html_dsl.label('Simple table:')
@@ -50,8 +50,7 @@ class HomeController < ApplicationController
     end
 
     html_dsl.line_break()
-=end
-=begin
+
     # A simple table with no header:
     html_dsl.div() do
       html_dsl.label('Simple table with no header:')
@@ -81,8 +80,7 @@ class HomeController < ApplicationController
     end
 
     html_dsl.line_break()
-=end
-=begin
+
     # Table with three columns on the first row, then two columns on the second row, and checkboxes only on the first row
     html_dsl.div() do
       html_dsl.label('Two rows, three columns / two columns with checkbox on the first row:')
@@ -154,7 +152,7 @@ class HomeController < ApplicationController
 
       html_dsl.inject(html)
     end
-=end
+
     # Nested tables:
     # Put the nested table in a separate, indented row.
     html_dsl.div() do
@@ -174,7 +172,7 @@ class HomeController < ApplicationController
                          'Demo',
                          ['field1'],
                          [1],
-                         options) do |record, node|
+                         options) do |record, col_idx, node|
       dataset = @data.select {|d| d.parent_id == record.id}
 
       if dataset.count > 0

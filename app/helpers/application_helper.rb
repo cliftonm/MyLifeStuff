@@ -138,7 +138,7 @@ module ApplicationHelper
             # Allow caller to specify additional HTML in the <td>, for example to allow nesting of tables.
             # Nested tables cannot be added to a row, they must be added within the td.
             if block_given?
-              yield(row, field_node)
+              yield(row, col_idx, field_node)
             end
           end
 
