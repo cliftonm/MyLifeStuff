@@ -91,6 +91,38 @@ module Airity
       nil
     end
 
+    def tr(id = nil, klass = nil, style = nil)
+      element = @xdoc.create_element('tr')
+      @current_node.append_child(element)
+      element.append_attribute(@xdoc.create_attribute('id', id)) if id
+      element.append_attribute(@xdoc.create_attribute('class', klass)) if klass
+      element.append_attribute(@xdoc.create_attribute('style', style)) if style
+      @current_node = element
+
+      nil
+    end
+
+    def tr_end()
+      pop()
+      nil
+    end
+
+    def td(id = nil, klass = nil, style = nil)
+      element = @xdoc.create_element('td')
+      @current_node.append_child(element)
+      element.append_attribute(@xdoc.create_attribute('id', id)) if id
+      element.append_attribute(@xdoc.create_attribute('class', klass)) if klass
+      element.append_attribute(@xdoc.create_attribute('style', style)) if style
+      @current_node = element
+
+      nil
+    end
+
+    def td_end()
+      pop()
+      nil
+    end
+
     # void nav(string id = nil, Hash klass = nil, string[] data = nil)
     def nav(id = nil, klass = nil, data = nil)
       element = @xdoc.create_element('nav')

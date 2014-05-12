@@ -39,13 +39,19 @@ module ApplicationHelper
   # &block: yield to caller at each row for creating sub-tables
   def create_table_view(table, table_name, columns, format, options = {}, &block)
     xdoc = XmlDocument.new()
-    table_node = xdoc.create_element('table')
+    create_table_view_at_node(xdoc, table, table_name, columns, format, options, &block)
+
+    get_html(xdoc).html_safe   # Return HTML.
+  end
+
+  def create_table_view_at_node(top_level_node, table, table_name, columns, format, options, &block)
+    table_node = create_element(top_level_node, 'table')
     append_attribute(table_node, options, :id)
     append_attribute(table_node, options, :class)
-    xdoc.append_child(table_node)
     create_table_header(table_node, columns, format, options)
     create_table_content(table_node, table, table_name, columns, format, options, &block)
-    get_html(xdoc).html_safe
+
+    table_node                # Return table node.
   end
 
   # create just the headers for the table inside a <thead> section.
@@ -58,7 +64,7 @@ module ApplicationHelper
         table_row_node = create_element(table_head_node, 'tr')
 
         # If first index and we want to show checkboxes, then create a placeholder header column
-        if (idx == 0 || options[:auto_indent]) && options[:show_checkbox_for_row]
+        if (idx == 0 || options[:auto_indent]) && options[:show_checkbox_for_row] && !options[:embed_checkbox]
           create_element(table_row_node, 'th')
         end
 
@@ -88,7 +94,7 @@ module ApplicationHelper
       format.each_with_index do |cols_per_row, idx|
         table_row_node = create_element(table_body_node, 'tr')
 
-        if idx == 0 && options[:show_checkbox_for_row]
+        if idx == 0 && options[:show_checkbox_for_row] && !options[:embedded_checkbox]
           table_data_node = create_element(table_row_node, 'td')
           input_node = create_element(table_data_node, 'input')
           create_attribute(input_node, 'type', 'checkbox')
@@ -101,146 +107,20 @@ module ApplicationHelper
         if options[:header_as_first_column]
           hdr_col = create_element(table_row_node, 'td')
           # The first column joins all the header names into a comma-separated list for the columns that go on this row.
-          hdr_col.inner_text = columns[col_idx..col_idx+cols_per_row-1].join(', ')+':'
+          hdr_col.inner_text = columns[col_idx..col_idx + cols_per_row - 1].join(', ') + ':'
         end
 
         (1..cols_per_row).each do
           column = columns[col_idx]
-          col_idx += 1
           table_data_node = create_element(table_row_node, 'td')
-          text = row[column].to_s
+          field_node = table_data_node
 
-          # Replace text with a custom specified renderer.
-          if options[:custom_text_renderers]
-            renderers = options[:custom_text_renderers]
-            if renderers[column.to_sym]
-              text = renderers[column.to_sym].call(text)
-            end
+          if col_idx == 0 && options[:show_checkbox_for_row] && options[:embedded_checkbox]
+            input_node = create_element(table_data_node, 'input')
+            create_attribute(input_node, 'type', 'checkbox')
+            create_attribute(input_node, 'name', record_name(table_name, row, row_idx))
+            field_node = input_node
           end
-
-          table_data_node.inner_text = text
-        end
-
-        # Allow caller to specify additional HTML in the <tr>, for example to allow nesting of tables.
-        if block_given?
-          yield(row, table_row_node)
-        end
-      end
-    end
-=begin
-      if options[:one_column_per_row]
-        # first row is just a checkbox.
-        # TODO: Caller should be able to label this checkbox perhaps.
-        if options[:show_checkbox_for_row]
-          table_row_node = create_element(table_body_node, 'tr')
-
-          # first row, add a class allowing us to delineate records by some styling
-          table_row_node.append_attribute(xdoc.create_attribute('class', 'next-record'))
-
-          table_data_node = xdoc.create_element('td')
-          input_node = xdoc.create_element('input')
-          input_node.append_attribute(xdoc.create_attribute('type', 'checkbox'))
-          input_node.append_attribute(xdoc.create_attribute('name', "#{table_name}[record_#{row[:id]}]"))
-          table_data_node.append_child(input_node)
-          table_row_node.append_child(table_data_node)
-        end
-
-        # next, each column is a separate row
-        columns.each_with_index do |column, idx|
-          table_row_node = xdoc.create_element('tr')
-          table_body_node.append_child(table_row_node)
-
-          if idx == 0 && !options[:show_checkbox_for_row]
-            # first row, add a class allowing us to delineate records by some styling
-            table_row_node.append_attribute(xdoc.create_attribute('class', 'next-record'))
-          end
-
-          # TODO : This is all hardcoded for notes right now
-          # See here: http://jsfiddle.net/NVx4S/21/
-          # The idea is to show/hide the note itself when the user clicks on the subject line.
-          if idx==0
-            # the first column is the field name
-            table_data_node = xdoc.create_element('td')
-            table_data_node.append_attribute(xdoc.create_attribute('class', 'clickme'))
-
-            table_data_node.inner_text = column.gsub('_', ' ').titleize + ':'
-            table_row_node.append_child(table_data_node)
-
-            # the second column is the data
-            table_data_node = xdoc.create_element('td')
-            table_data_node.append_attribute(xdoc.create_attribute('class', 'clickme'))
-
-            text = row[column].to_s
-
-            # Replace text with a custom specified renderer.
-            if options[:custom_text_renderers]
-              renderers = options[:custom_text_renderers]
-              if renderers[column.to_sym]
-                text = renderers[column.to_sym].call(text)
-              end
-            end
-
-            table_data_node.inner_text = text
-            table_row_node.append_child(table_data_node)
-          else
-            # second row
-            # just display the data (the note)
-            table_row_node.append_attribute(xdoc.create_attribute('class', 'hideme'))
-            table_data_node = xdoc.create_element('td')
-            table_data_node.append_attribute(xdoc.create_attribute('colspan', '2'))
-            table_row_node.append_child(table_data_node)
-            div = xdoc.create_element('div')
-            table_data_node.append_child(div)
-
-            text = row[column].to_s
-
-            # Replace text with a custom specified renderer.
-            if options[:custom_text_renderers]
-              renderers = options[:custom_text_renderers]
-              if renderers[column.to_sym]
-                text = renderers[column.to_sym].call(text)
-              end
-            end
-
-            div.inner_text = text
-=end
-=begin
-            # the second column is the data
-            table_data_node = xdoc.create_element('td')
-            table_data_node.append_attribute(xdoc.create_attribute('class', 'clickme'))
-
-            text = row[column].to_s
-
-            # Replace text with a custom specified renderer.
-            if options[:custom_text_renderers]
-              renderers = options[:custom_text_renderers]
-              if renderers[column.to_sym]
-                text = renderers[column.to_sym].call(text)
-              end
-            end
-
-            table_data_node.inner_text = text
-            table_row_node.append_child(table_data_node)
-=end
-=begin
-          end
-        end
-      else
-        table_row_node = xdoc.create_element('tr')
-        table_body_node.append_child(table_row_node)
-
-        # show checkbox in the first column separate from all other data columns
-        if options[:show_checkbox_for_row]
-          table_data_node = xdoc.create_element('td')
-          input_node = xdoc.create_element('input')
-          input_node.append_attribute(xdoc.create_attribute('type', 'checkbox'))
-          input_node.append_attribute(xdoc.create_attribute('name', "#{table_name}[record_#{row[:id]}]"))
-          table_data_node.append_child(input_node)
-          table_row_node.append_child(table_data_node)
-        end
-
-        columns.each_with_index do |column, idx|
-          table_data_node = xdoc.create_element('td')
 
           text = row[column].to_s
 
@@ -252,34 +132,29 @@ module ApplicationHelper
             end
           end
 
-          # show checkboxes for each column and row.
-          if options[:show_checkboxes]
-            input_node = xdoc.create_element('input')
-            input_node.append_attribute(xdoc.create_attribute('type', 'checkbox'))
-            input_node.append_attribute(xdoc.create_attribute('name', "#{table_name}[record_#{row[:id]}]"))
-            input_node.inner_text = text
-            table_data_node.append_child(input_node)
-          # show checkboxes for only the first column.
-          elsif options[:show_checkbox_first_column] && idx == 0
-            input_node = xdoc.create_element('input')
-            input_node.append_attribute(xdoc.create_attribute('type', 'checkbox'))
-            input_node.append_attribute(xdoc.create_attribute('name', "#{table_name}[record_#{row[:id]}]"))
-            input_node.inner_text = text
-            table_data_node.append_child(input_node)
-          else
-            table_data_node.inner_text = text
+          field_node.inner_text = text
+
+          if options[:yield_at_td]
+            # Allow caller to specify additional HTML in the <td>, for example to allow nesting of tables.
+            # Nested tables cannot be added to a row, they must be added within the td.
+            if block_given?
+              yield(row, field_node)
+            end
           end
 
-          table_row_node.append_child(table_data_node)
+          col_idx += 1
+        end # end cols per row
 
-          # Allow caller to specify additional HTML in the <td>, for example to allow nesting of tables.
+        if options[:yield_at_tr]
+          # Allow caller to specify additional HTML in the <tr>, for example to allow nesting of tables.
+          # Nested tables cannot be added to a row, they must be added within the td.
           if block_given?
-            yield(row, table_data_node)
+            yield(row, table_row_node)
           end
         end
-      end
+      end # end row
     end
-=end
+
     nil
   end
 
@@ -287,7 +162,7 @@ module ApplicationHelper
   def get_html(xdoc)
     tw = XmlTextWriter.new()                # create a text writer
     tw.formatting = :indented
-    tw.allow_self_closing_tags = false      # HTML5 compliance
+    tw.allow_self_closing_tags = true      # HTML5 compliance
     xdoc.save(tw)                           # generate the HTML
 
     tw.output

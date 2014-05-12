@@ -5,7 +5,7 @@ gem 'rails', '3.2.17'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-gem 'clifton_lib', '0.0.7'
+gem 'clifton_lib', '0.0.9'
 gem 'linguistics'     # Rails independent gem
 gem 'encryptor'       # https://github.com/attr-encrypted/encryptor
 gem 'ckeditor'
