@@ -238,6 +238,8 @@ module ApplicationHelper
   # Requires the model name and the field list.
   # The edit boxes are expected to have an ID of the form "[model]_[fieldname]"
   # TODO: Need to check the selected categories as well.
+  # TODO: Need to check/uncheck the selected categories as well.
+  # TODO: Doesn't handle nested tables.
   def create_row_click_javascript(model, field_list, col_start)
 =begin
   javascript = "<script type='text/javascript'>\r\n//<![CDATA[\r\n"

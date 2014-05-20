@@ -9,27 +9,29 @@
 <body>
 
 <p>
-  <% if current_user %>
-      Logged in as <%= current_user.username %>.
-      <%= link_to "Sign Out", signed_out_path %>
-      <%= link_to "Account Settings", account_settings_path %>
-      <% if current_user.is_admin %>
-        <%= link_to "Admin", admin_users_path %>
+  <% if !@is_album %>
+      <% if current_user %>
+          Logged in as <%= current_user.username %>.
+          <%= link_to "Sign Out", signed_out_path %>
+          <%= link_to "Account Settings", account_settings_path %>
+          <% if current_user.is_admin %>
+            <%= link_to "Admin", admin_users_path %>
+          <% end %>
+          <br>
+          <%= link_to "Categories", categories_path %>
+          <%= link_to "Accounts", accounts_path %>
+          <%= link_to "Contacts", contacts_path %>
+          <%= link_to "Recipes", recipes_path %>
+          <%= link_to "Journal", journal_path %>
+          <%= link_to "Kanban", kanban_path %>
+          <%= link_to "Coaching", coaching_path %>
+          <%= link_to "Notes", notes_path %>
+          <%= link_to "Tasks", tasks_path %>
+          <%= link_to "Calendar", calendar_path %>
+      <% else %>
+          <%= link_to "Sign up", new_user_path %> or
+          <%= link_to "Sign In", sign_in_path %>
       <% end %>
-      <br>
-      <%= link_to "Categories", categories_path %>
-      <%= link_to "Accounts", accounts_path %>
-      <%= link_to "Contacts", contacts_path %>
-      <%= link_to "Recipes", recipes_path %>
-      <%= link_to "Journal", journal_path %>
-      <%= link_to "Kanban", kanban_path %>
-      <%= link_to "Coaching", coaching_path %>
-      <%= link_to "Notes", notes_path %>
-      <%= link_to "Tasks", tasks_path %>
-      <%= link_to "Calendar", calendar_path %>
-  <% else %>
-      <%= link_to "Sign up", new_user_path %> or
-      <%= link_to "Sign In", sign_in_path %>
   <% end %>
 </p>
 

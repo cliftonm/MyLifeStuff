@@ -47,6 +47,7 @@ MyLifeStuff::Application.routes.draw do
   get "time" => "home#not_implemented"        # time tracker
 
   get "test" => "home#test"
+  get "pics" => "pics#photo_album"
   get "table_demo" => "home#table_demo"
   get "my_pages" => "home#my_pages"
   post "my_pages" => "home#my_pages_post"

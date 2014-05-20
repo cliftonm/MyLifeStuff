@@ -75,6 +75,45 @@ module Airity
       nil
     end
 
+    def table()
+      element = @xdoc.create_element('table')
+      @current_node.append_child(element)
+      @current_node = element
+
+      nil
+    end
+
+    def table_end()
+      pop()
+      nil
+    end
+
+    def table_row()
+      element = @xdoc.create_element('tr')
+      @current_node.append_child(element)
+      @current_node = element
+
+      nil
+    end
+
+    def table_row_end()
+      pop()
+      nil
+    end
+
+    def table_data()
+      element = @xdoc.create_element('td')
+      @current_node.append_child(element)
+      @current_node = element
+
+      nil
+    end
+
+    def table_data_end()
+      pop()
+      nil
+    end
+
     def div(id = nil, klass = nil, style = nil)
       element = @xdoc.create_element('div')
       @current_node.append_child(element)
@@ -366,13 +405,15 @@ module Airity
       nil
     end
 
-    def image(image_name, id = nil, klass = nil)
+    def image(image_name, options, id = nil, klass = nil)
       element = @xdoc.create_element('img')
       element.html_closing_tag = false
       @current_node.append_child(element)
       element.append_attribute(@xdoc.create_attribute('id', id)) if id
       element.append_attribute(@xdoc.create_attribute('class', klass)) if klass
       element.append_attribute(@xdoc.create_attribute('src', image_name))
+      element.append_attribute(@xdoc.create_attribute('width', options[:width])) if options[:width]
+      element.append_attribute(@xdoc.create_attribute('width', options[:height])) if options[:height]
 
       nil
     end

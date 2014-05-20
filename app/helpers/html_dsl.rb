@@ -50,6 +50,24 @@ module Airity
       nil
     end
 
+    def table()
+      @html_gen.table()
+      yield
+      @html_gen.table_end()
+    end
+
+    def table_row()
+      @html_gen.table_row()
+      yield
+      @html_gen.table_row_end()
+    end
+
+    def table_data()
+      @html_gen.table_data()
+      yield
+      @html_gen.table_data_end()
+    end
+
     def div(options = {})
       class_names = get_class_names(options)
       styles = get_styles(options)
@@ -192,7 +210,7 @@ module Airity
     def image(image_name, options = {})
       class_names = get_class_names(options)
       id = get_id(options)
-      @html_gen.image(image_name, id, class_names)
+      @html_gen.image(image_name, options, id, class_names)
 
       nil
     end
