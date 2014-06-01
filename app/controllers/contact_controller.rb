@@ -210,7 +210,7 @@ class ContactController < ApplicationController
   # TODO: Website should be a link!  See note on having a field dictionary that specifies the "control" used to display the data.
   def create_contact_table(contacts, options={})
     opts = {show_checkbox_for_row: true}.merge(options)
-    contact_html = create_table_view(contacts, 'contact_list', @contact_fields, opts)
+    contact_html = create_table_view(contacts, 'contact_list', @contact_fields, [@contact_fields.count()], opts)
 
     contact_html
   end

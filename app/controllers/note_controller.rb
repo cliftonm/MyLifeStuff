@@ -135,7 +135,7 @@ class NoteController < ApplicationController
   # TODO: Website should be a link!  See note on having a field dictionary that specifies the "control" used to display the data.
   def create_note_table(notes, options={})
     opts = {show_checkbox_for_row: true}.merge(options)
-    note_html = create_table_view(notes, 'note_list', @note_fields, opts)
+    note_html = create_table_view(notes, 'note_list', @note_fields, [@note_fields.count()], opts)
 
     note_html
   end

@@ -37,7 +37,7 @@ class AccountController < ApplicationController
       html_dsl.div({classes: [@styles.div_fill]}) {}
 
       # Managing accounts
-      html_dsl.div({classes: [@styles.inline_div]}) do
+      html_dsl.div({classes: [@styles.inline_div]}  ) do
         create_account_management(html_dsl)
       end
 
@@ -172,9 +172,9 @@ class AccountController < ApplicationController
       # And call specify the renderer this way:
       # opts.merge!({custom_text_renderers: {password: decrypt_password}})
 
-      account_html = create_table_view(accounts, 'account_list', @full_field_list, opts)
+      account_html = create_table_view(accounts, 'account_list', @full_field_list, [@full_field_list.count()], opts)
     else
-      account_html = create_table_view(accounts, 'account_list', @partial_field_list, opts)
+      account_html = create_table_view(accounts, 'account_list', @partial_field_list, [@partial_field_list.count()], opts)
     end
 
     account_html
